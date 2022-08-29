@@ -1,2 +1,7 @@
 
 env.py
+__pycache__/wrangle.cpython-39.pyc
+__pycache__/explore.cpython-39.pyc
+__pycache__/acquire.cpython-39.pyc
+__pycache__/env.cpython-39.pyc
+__pycache__/prepare.cpython-39.pyc

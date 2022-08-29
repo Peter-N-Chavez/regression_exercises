@@ -65,12 +65,6 @@ def prep_telco(telco):
     telco = pd.concat([telco, dummy_df], axis=1)
     return telco
     
-# Split your data
-
-#  Write a function to split your data into train, test and validate datasets.
-
-
-
 def prep_split(df, target):
     
     train, test = train_test_split(df, test_size=.2, random_state=269, 
@@ -80,6 +74,6 @@ def prep_split(df, target):
     return train, validate, test
 
 def impute_col_nan(df, column, strat):
-    imp_col = SimpleImputer(missing_values= np.nan, strategy=(strat))
+    imp_col = SimpleImputer(missing_values = np.nan, strategy = (strat))
     df[[column]] = imp_col.fit_transform(df[[column]])
     return df
