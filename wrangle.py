@@ -21,13 +21,31 @@ from acquire import *
 from prepare import *
 from explore import *
 import env
+import os
 
 def acquire_zillow():
     url_zillow = get_db_url(env.hostname, env.username, env.password, "zillow")
     query = pd.read_sql('''SELECT bedroomcnt, bathroomcnt, calculatedfinishedsquarefeet AS cal_fin_sqf, taxvaluedollarcnt AS tax_val, yearbuilt AS year_built, taxamount, fips \
                         FROM properties_2017 \
-                        WHERE propertylandusetypeid = 261; ''', url_zillow)
-    return query
+                        WHERE propertylandusetypeid = 261
+                        OR propertylandusetypeid = 279; ''', url_zillow)
+
+    filename = "zillow_predictions.csv"
+    # if file is available locally, read it
+    if os.path.isfile(filename):
+        return pd.read_csv(filename)
+    
+    # if file not available locally, acquire data from SQL database
+    # and write it as csv locally for future use
+    else:
+        # read the SQL query into a dataframe
+        df = query
+        
+        # Write that dataframe to disk for later. Called "caching" the data for later.
+        df.to_csv(filename)
+
+        # Return the dataframe to the calling code
+        return df
 
 def remove_outliers_v2(df, k, col_list):
     ''' remove outliers from a list of columns in a dataframe 
@@ -65,8 +83,8 @@ def prepare_zillow(df):
     df.year_built = df.year_built.astype(object)
     
     # train/validate/test split
-    train_validate, test = train_test_split(df, test_size=.2, random_state=123)
-    train, validate = train_test_split(train_validate, test_size=.3, random_state=123)
+    train_validate, test = train_test_split(df, test_size=.2, random_state=249)
+    train, validate = train_test_split(train_validate, test_size=.3, random_state=249)
     
     # impute year built using mode
     imputer = SimpleImputer(strategy='median')
@@ -116,7 +134,7 @@ def get_box(df):
     plt.show()
 
 def get_hist(df):
-    ''' Gets histographs of acquired continuous variables'''
+    ''' Gets histographs of acquired continuous variables.'''
     
     plt.figure(figsize=(16, 3))
 
@@ -150,3 +168,17 @@ def get_hist(df):
 def get_box_hist_viz(df):
     get_hist(df)
     get_box(df)
+
+
+
+def visualize_scaler(scaler, df, columns_to_scale, bins=10):
+    fig, axs = plt.subplots(len(columns_to_scale), 2, figsize=(16,9))
+    df_scaled = df.copy()
+    df_scaled[columns_to_scale] = scaler.fit_transform(df[columns_to_scale])
+    for (ax1, ax2), col in zip(axs, columns_to_scale):
+        ax1.hist(df[col], bins=bins)
+        ax1.set(title=f'{col} before scaling', xlabel=col, ylabel='count')
+        ax2.hist(df_scaled[col], bins=bins)
+        ax2.set(title=f'{col} after scaling with {scaler.__class__.__name__}', xlabel=col, ylabel='count')
+    plt.tight_layout()
+
