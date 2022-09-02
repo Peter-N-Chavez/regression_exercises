@@ -47,7 +47,7 @@ def acquire_zillow():
         # Return the dataframe to the calling code
         return df
 
-def remove_outliers_v2(df, k, col_list):
+def remove_outliers(df, k, col_list):
     ''' remove outliers from a list of columns in a dataframe 
         and return that dataframe
     '''
@@ -76,7 +76,7 @@ def prepare_zillow(df):
     ''' Prepare zillow data for exploration'''
 
     # removing outliers
-    df = remove_outliers_v2(df, 1.5, ['bedroomcnt', 'bathroomcnt', 'cal_fin_sqf', 'tax_val',           'taxamount'])
+    df = remove_outliers(df, 1.5, ['bedroomcnt', 'bathroomcnt', 'cal_fin_sqf', 'tax_val',           'taxamount'])
     
     # converting column datatypes
     df.fips = df.fips.astype(object)
