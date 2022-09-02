@@ -6,3 +6,6 @@ __pycache__/acquire.cpython-39.pyc
 __pycache__/env.cpython-39.pyc
 __pycache__/prepare.cpython-39.pyc
 zillow_predictions.csv
+__pycache__/wrangle_grades.cpython-39.pyc
+wrangle_grades.ipynb
+wrangle_grades.ipynb
